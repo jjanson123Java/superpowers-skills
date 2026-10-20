@@ -1,0 +1,70 @@
+name: Package Neo Superpowers Skills
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - plugin.json
+      - .github/workflows/package-neo-superpowers.yml
+
+permissions:
+  contents: read
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout independent skills library
+        uses: actions/checkout@v4
+      - name: Validate plugin and create skills-only ZIP
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json, pathlib, re
+          root=pathlib.Path('.')
+          plugin=json.loads((root/'plugin.json').read_text(encoding='utf-8'))
+          assert plugin['name']=='neo-superpowers-skills'
+          assert plugin['$schema']=='https://agent-plugins.org/schemas/1.0.0/plugin.schema.json'
+          interface=plugin['extensions']['com.openai']['interface']
+          assert len(interface['shortDescription'])<=30
+          paths=sorted((root/'skills').glob('*/SKILL.md'))
+          assert len(paths)==15, f'Expected 15 skills; found {len(paths)}'
+          for p in paths:
+              data=p.read_text(encoding='utf-8')
+              assert data.startswith('---\n'), f'Missing YAML frontmatter: {p}'
+              front=data.split('---',2)[1]
+              assert re.search(r'(?m)^name:\s*'+re.escape(p.parent.name)+r'\s*$',front), f'Name does not match directory: {p}'
+              assert re.search(r'(?m)^description:\s*\S+',front), f'Missing skill description: {p}'
+              assert len(data.encode('utf-8'))<=1_048_576, f'Skill exceeds size limit: {p}'
+          for asset in ['assets/app-icon.png','assets/superpowers-small.svg','LICENSE']:
+              assert (root/asset).is_file(), f'Missing dependency: {asset}'
+          print('PASS: 15 skills, metadata, referenced assets, MIT license')
+          PY
+          mkdir -p /tmp/neo-superpowers-skills/assets
+          cp plugin.json LICENSE INDEPENDENT-MIRROR.md /tmp/neo-superpowers-skills/
+          cp -a skills /tmp/neo-superpowers-skills/
+          cp assets/app-icon.png assets/superpowers-small.svg /tmp/neo-superpowers-skills/assets/
+          test -z "$(find /tmp/neo-superpowers-skills -type l -print -quit)"
+          (cd /tmp && zip -q -r "$GITHUB_WORKSPACE/neo-superpowers-skills.zip" neo-superpowers-skills)
+          python3 - <<'PY'
+          import zipfile,json
+          path='neo-superpowers-skills.zip'
+          with zipfile.ZipFile(path) as z:
+              names=z.namelist()
+              prefix='neo-superpowers-skills/'
+              assert prefix+'plugin.json' in names
+              assert prefix+'LICENSE' in names
+              skills=[n for n in names if n.startswith(prefix+'skills/') and n.endswith('/SKILL.md')]
+              assert len(skills)==15, len(skills)
+              root=json.loads(z.read(prefix+'plugin.json'))
+              assert root['name']=='neo-superpowers-skills'
+              print('PASS: ZIP contains',len(skills),'skills and manifest; total entries',len(names))
+          PY
+      - name: Upload validated installation archive
+        uses: actions/upload-artifact@v4
+        with:
+          name: neo-superpowers-skills-install
+          path: neo-superpowers-skills.zip
+          if-no-files-found: error
+          retention-days: 90
