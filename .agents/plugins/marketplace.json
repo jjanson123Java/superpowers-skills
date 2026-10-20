@@ -7,9 +7,8 @@
     {
       "name": "neo-superpowers-skills",
       "source": {
-        "source": "url",
-        "url": "https://github.com/jjanson123Java/superpowers-skills.git",
-        "ref": "main"
+        "source": "local",
+        "path": "./"
       },
       "policy": {
         "installation": "AVAILABLE",
