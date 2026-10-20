@@ -11,6 +11,18 @@ This repository packages **15 independently hosted, MIT-licensed Superpowers ski
 
 **Not yet done:** This GitHub preparation does not install the plugin into your ChatGPT account or change ChatGPT's built-in menus. Plugin installation requires account-side action.
 
+## Verified standalone ZIP package
+
+A portable, skills-only archive is now automatically built by [GitHub Actions — Package Neo Superpowers Skills](https://github.com/jjanson123Java/superpowers-skills/actions/workflows/package-neo-superpowers.yml).
+
+- Validated archive name: `neo-superpowers-skills.zip`.
+- Archive contents: the root `plugin.json`, 15 `SKILL.md` definitions and their support files, original `LICENSE`, original-attribution document, and required icon assets.
+- GitHub Actions creates an artifact named `neo-superpowers-skills-install`. Download the artifact from the successful run, then extract its inner `neo-superpowers-skills.zip`; the **inner ZIP** is the standalone plugin package to upload.
+- The root manifest's short description has been corrected to comply with the 30-character limit.
+- Package generation does **not** install or save the personal plugin in ChatGPT. Plugin Creator (or an account-facing plugin save/upload tool) must complete that step.
+
+When using **Plugin Creator** on Android, attach the inner ZIP from the device's Downloads folder and ask: "Save this archive as my personal Neo Superpowers Skills plugin; verify that all 15 skills were ingested and show me the plugin's installed page." Do not upload the **outer GitHub Actions artifact ZIP** in place of the inner plugin ZIP.
+
 ## Install as a personal ChatGPT plugin (Android or web)
 
 1. In ChatGPT, open **Plugins** in the sidebar.
