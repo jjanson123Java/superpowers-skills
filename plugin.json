@@ -1,0 +1,47 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "neo-superpowers-skills",
+  "version": "1.0.0",
+  "description": "Independent, GitHub-maintained collection of 15 Superpowers software development skills for planning, test-driven development, debugging, review, and verification.",
+  "author": {
+    "name": "Neo",
+    "url": "https://github.com/jjanson123Java"
+  },
+  "homepage": "https://github.com/jjanson123Java/superpowers-skills",
+  "repository": "https://github.com/jjanson123Java/superpowers-skills",
+  "license": "MIT",
+  "keywords": [
+    "skills",
+    "development",
+    "brainstorming",
+    "planning",
+    "tdd",
+    "debugging",
+    "code-review",
+    "verification"
+  ],
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "displayName": "Neo Superpowers Skills",
+        "shortDescription": "Choose from 15 development workflow skills",
+        "longDescription": "An independent copy of Jesse Vincent's MIT-licensed Superpowers skills. Guide coding agents through brainstorming, implementation plans, test-driven development, root-cause debugging, code review, and verification. Open the SKILLS-INDEX.md in this repository to choose a specific skill.",
+        "developerName": "Neo (independent packaging; original author Jesse Vincent)",
+        "category": "Developer Tools",
+        "capabilities": [
+          "Read",
+          "Write"
+        ],
+        "websiteURL": "https://github.com/jjanson123Java/superpowers-skills",
+        "defaultPrompt": [
+          "List all 15 Neo Superpowers skills and explain which one fits my current task.",
+          "Use the systematic-debugging skill on this issue; establish root cause before proposing a patch.",
+          "Use writing-plans to create an implementation plan for my project."
+        ],
+        "brandColor": "#F59E0B",
+        "composerIcon": "./assets/superpowers-small.svg",
+        "logo": "./assets/app-icon.png"
+      }
+    }
+  }
+}
