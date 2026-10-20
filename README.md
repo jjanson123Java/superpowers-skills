@@ -1,4 +1,7 @@
 # Superpowers
+
+> **[Use your copy of Superpowers in ChatGPT](CHATGPT-SETUP.md):** follow the personal-plugin setup to make all 15 skills available under **Neo Superpowers Skills**. Your repository is packaged with [plugin.json](plugin.json) and a [Codex marketplace](.agents/plugins/marketplace.json). Account-side installation is still required.
+
 > **New to these skills?** Open the **[Skills Guide & Index](SKILLS-INDEX.md)** for a plain-English explanation of all 15 skills, when to use each one, example workflows, and direct links to every `SKILL.md`.
 
 > **Independent repository:** This is a one-time copy maintained at [jjanson123Java/superpowers-skills](https://github.com/jjanson123Java/superpowers-skills). See [INDEPENDENT-MIRROR.md](INDEPENDENT-MIRROR.md). Some original installation commands below still point to upstream; consult the [Skills Guide](SKILLS-INDEX.md#independence-installation-and-provenance) before installing your own copy.
