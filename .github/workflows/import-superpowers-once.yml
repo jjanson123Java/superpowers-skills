@@ -1,0 +1,99 @@
+name: One-time Superpowers independent mirror
+on:
+  push:
+    paths:
+      - .github/workflows/import-superpowers-once.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Mirror upstream Git history into this repository and verify
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config --global user.name "superpowers-skills migration"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git clone --mirror https://github.com/obra/superpowers.git /tmp/superpowers-upstream.git
+          SOURCE=/tmp/superpowers-upstream.git
+          ORIGINAL=$(git --git-dir="$SOURCE" rev-parse refs/heads/main)
+          SOURCE_FILES=$(git --git-dir="$SOURCE" ls-tree -r --name-only "$ORIGINAL" | wc -l | tr -d ' ')
+          test "$SOURCE_FILES" -eq 238
+          git --git-dir="$SOURCE" show "$ORIGINAL:LICENSE" | grep -q 'MIT License'
+          DEST="https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          git --git-dir="$SOURCE" remote add destination "$DEST"
+          OLD=$(git --git-dir="$SOURCE" ls-remote destination refs/heads/main | awk '{print $1}')
+          if [ -n "$OLD" ]; then
+            git --git-dir="$SOURCE" fetch destination "refs/heads/main:refs/heads/backup/pre-mirror-main"
+            git --git-dir="$SOURCE" push destination "refs/heads/backup/pre-mirror-main:refs/heads/backup/pre-mirror-main"
+          fi
+          if [ -n "$OLD" ]; then
+            git --git-dir="$SOURCE" push destination "refs/heads/main:refs/heads/main" "--force-with-lease=refs/heads/main:$OLD"
+          else
+            git --git-dir="$SOURCE" push destination "refs/heads/main:refs/heads/main"
+          fi
+          git --git-dir="$SOURCE" push destination --all
+          git --git-dir="$SOURCE" push destination --tags
+          git clone --branch main "$DEST" /tmp/superpowers-independent
+          cd /tmp/superpowers-independent
+          git merge-base --is-ancestor "$ORIGINAL" HEAD
+          test "$(git ls-tree -r --name-only HEAD | wc -l | tr -d ' ')" -eq "$SOURCE_FILES"
+          python3 - <<'PY'
+          from pathlib import Path
+          import json
+          old = "https://github.com/obra/superpowers"
+          new = "https://github.com/jjanson123Java/superpowers-skills"
+          changed = []
+          for path in Path(".").rglob("plugin.json"):
+              if ".git" in path.parts:
+                  continue
+              try:
+                  obj = json.loads(path.read_text(encoding="utf-8"))
+              except Exception:
+                  continue
+              touched = False
+              for key in ("homepage", "repository"):
+                  if obj.get(key) == old:
+                      obj[key] = new
+                      touched = True
+              if touched:
+                  path.write_text(json.dumps(obj, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+                  changed.append(str(path))
+          sha = __import__("subprocess").check_output(["git", "rev-parse", "HEAD"], text=True).strip()
+          Path("INDEPENDENT-MIRROR.md").write_text(
+              "# Independent Superpowers skills library\n\n"
+              "This repository is a one-time copy of [obra/superpowers](" + old + ") "
+              "at upstream commit `" + sha + "`.\n\n"
+              "The complete upstream Git branch history and tags were imported. "
+              "This repository is independent: no automated synchronization with upstream "
+              "is configured. Future upstream updates do not change these files.\n\n"
+              "The original MIT license and copyright attribution remain in [LICENSE](LICENSE). "
+              "The package plugin manifests that identify a repository now point to this independent repository.\n\n"
+              "The pre-migration GitHub README branch is preserved at "
+              "`backup/pre-mirror-main`.\n\n"
+              "Copied plugin manifests: " + (", ".join(changed) or "no matching upstream URLs found") + ".\n",
+              encoding="utf-8"
+          )
+          print("Updated plugin manifests:", changed)
+          PY
+          git add -A
+          if ! git diff --cached --quiet; then
+            git commit -m "Configure independent skills library and record upstream attribution"
+            git push origin main
+          fi
+          git merge-base --is-ancestor "$ORIGINAL" HEAD
+          test -f LICENSE
+          test -f skills/using-superpowers/SKILL.md
+          test -f skills/test-driven-development/SKILL.md
+          test -f skills/systematic-debugging/SKILL.md
+          SRC_LIST=$(git --git-dir="$SOURCE" ls-tree -r --name-only "$ORIGINAL" | sort)
+          DST_LIST=$(git ls-tree -r --name-only HEAD | grep -v '^INDEPENDENT-MIRROR.md$' | sort)
+          test "$SRC_LIST" = "$DST_LIST"
+          echo "VERIFIED original_sha=$ORIGINAL source_files=$SOURCE_FILES final_sha=$(git rev-parse HEAD) backup=$OLD"
