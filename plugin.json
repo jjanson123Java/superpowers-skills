@@ -24,7 +24,7 @@
     "com.openai": {
       "interface": {
         "displayName": "Neo Superpowers Skills",
-        "shortDescription": "Choose from 15 development workflow skills",
+        "shortDescription": "15 development workflow skills",
         "longDescription": "An independent copy of Jesse Vincent's MIT-licensed Superpowers skills. Guide coding agents through brainstorming, implementation plans, test-driven development, root-cause debugging, code review, and verification. Open the SKILLS-INDEX.md in this repository to choose a specific skill.",
         "developerName": "Neo (independent packaging; original author Jesse Vincent)",
         "category": "Developer Tools",
