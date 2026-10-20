@@ -1,14 +1,15 @@
 {
-  "name": "superpowers-dev",
+  "name": "neo-superpowers-marketplace",
   "interface": {
-    "displayName": "Superpowers Dev"
+    "displayName": "Neo Superpowers Skills"
   },
   "plugins": [
     {
-      "name": "superpowers",
+      "name": "neo-superpowers-skills",
       "source": {
         "source": "url",
-        "url": "./"
+        "url": "https://github.com/jjanson123Java/superpowers-skills.git",
+        "ref": "main"
       },
       "policy": {
         "installation": "AVAILABLE",
