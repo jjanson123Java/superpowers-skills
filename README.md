@@ -1,8 +1,14 @@
 # Superpowers
+> **New to these skills?** Open the **[Skills Guide & Index](SKILLS-INDEX.md)** for a plain-English explanation of all 15 skills, when to use each one, example workflows, and direct links to every `SKILL.md`.
+
+> **Independent repository:** This is a one-time copy maintained at [jjanson123Java/superpowers-skills](https://github.com/jjanson123Java/superpowers-skills). See [INDEPENDENT-MIRROR.md](INDEPENDENT-MIRROR.md). Some original installation commands below still point to upstream; consult the [Skills Guide](SKILLS-INDEX.md#independence-installation-and-provenance) before installing your own copy.
+
 
 Superpowers is a complete software development methodology for your coding agents, built on top of a set of composable skills and some initial instructions that make sure your agent uses them.
 
 ## Table of Contents
+
+- **[Skills Guide & Index — all 15 skills explained](SKILLS-INDEX.md)**
 
 - [How it works](#how-it-works)
 - [Commercial Services](#commercial-services)
